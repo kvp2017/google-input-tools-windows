@@ -29,7 +29,10 @@ add_test(NAME tamil-engine-smoke COMMAND tamil-engine-tests)
 # Early TSF COM lifecycle scaffold. Key-event handling, registration, composition,
 # installer integration, and Windows compatibility tests are subsequent milestones.
 if(WIN32)
-    add_library(tamil_tsf SHARED src/windows-tsf/tsf_provider.cpp)
+    add_library(tamil_tsf SHARED
+        src/windows-tsf/tsf_provider.cpp
+        src/windows-tsf/TamilTextService.def
+    )
     target_link_libraries(tamil_tsf PRIVATE input_engine ole32 msctf uuid)
     target_compile_definitions(tamil_tsf PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN)
     if(MSVC)
