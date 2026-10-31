@@ -133,6 +133,7 @@ std::string fallback(const std::string& input) {
 std::vector<std::string> TamilTransliterator::candidates(std::string_view roman) const {
     const std::string input = lower_ascii(roman);
     if (input == "kalam") return {"காலம்", "களம்"};
+    if (input == "palli") return {"பள்ளி", "பல்லி"};
     if (input == "malai") return {"மலை", "மாலை"};
     if (input == "kural") return {"குறள்", "குரல்"};
     if (input == "kodi") return {"கொடி", "கோடி"};
