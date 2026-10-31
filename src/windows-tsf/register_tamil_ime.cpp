@@ -77,14 +77,13 @@ HRESULT unregister_profile() {
     if (SUCCEEDED(hr)) {
         profiles->RemoveLanguageProfile(
             CLSID_TamilTextService, kTamilIndiaLangId, GUID_TamilProfile);
-        hr = profiles->Unregister(CLSID_TamilTextService);
+        profiles->Unregister(CLSID_TamilTextService);
         profiles->Release();
     }
 
     const std::wstring key_name =
         L"Software\\Classes\\CLSID\\" + clsid_string();
     const LONG remove_result = RegDeleteTreeW(HKEY_CURRENT_USER, key_name.c_str());
-    if (FAILED(hr) && hr != TF_E_INVALID_ASYNC_REQUEST) return hr;
     if (remove_result != ERROR_SUCCESS && remove_result != ERROR_FILE_NOT_FOUND) {
         return HRESULT_FROM_WIN32(remove_result);
     }
