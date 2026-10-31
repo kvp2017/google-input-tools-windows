@@ -33,7 +33,7 @@ if(WIN32)
         src/windows-tsf/tsf_provider.cpp
         src/windows-tsf/TamilTextService.def
     )
-    target_link_libraries(tamil_tsf PRIVATE input_engine ole32 msctf uuid)
+    target_link_libraries(tamil_tsf PRIVATE input_engine ole32 uuid)
     target_compile_definitions(tamil_tsf PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN)
     if(MSVC)
         target_compile_options(tamil_tsf PRIVATE /W4 /permissive- /utf-8)
