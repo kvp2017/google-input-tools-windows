@@ -1,40 +1,44 @@
 # Windows Text Services Framework design
 
-## First target
+## Target
 
-Windows 11 x64, native C++ COM in-process text service. The TSF layer must remain a thin
-adapter around the platform-neutral `input_engine` library.
+Windows 11 x64, native C++ COM in-process text service. TSF remains a thin adapter around
+the platform-neutral \`input_engine\` library.
 
-## Components
+## Implemented prototype
 
-1. **COM text service** — implements `ITfTextInputProcessor`, activates/deactivates with
-   the TSF thread manager, and owns per-thread service state.
-2. **Key event sink** — handles roman key input, backspace, space/enter commit, and escape cancel.
-3. **Composition controller** — requests TSF edit sessions and updates the active document range.
-4. **Candidate UI** — later milestone for ambiguous roman input and alternate Tamil spellings.
-5. **Language profile** — registers Tamil (India, LANGID 0x0449) and exposes a user-selectable
-   TSF profile.
-6. **Installer** — registers/unregisters the COM server and TSF profile safely; never uses the
-   upstream repository's test certificate.
+- \`ITfTextInputProcessor\` activation/deactivation and \`ITfKeyEventSink\`.
+- Roman A–Z key capture and live update of an active TSF composition.
+- Backspace updates the pre-edit word; Escape cancels the composition.
+- A simple non-activating Win32 popup displays alternate dictionary candidates.
+- Number keys 1–9 and Up/Down move the candidate selection.
+- Space, Enter, period, comma, semicolon, or slash commits the selected candidate.
+- All document mutations occur through synchronous read/write TSF edit sessions.
+- UTF-8 engine output is converted to UTF-16 with strict invalid-sequence checking.
 
-## Current implementation
+## Known limitations
 
-`src/windows-tsf/tsf_provider.cpp` now implements the initial COM activation/deactivation
-lifecycle, class factory exports, and an `ITfKeyEventSink`. The key sink buffers A–Z keystrokes,
-supports backspace and escape in the pending roman buffer, and commits the transliterated word
-when the user presses space, enter, period, comma, semicolon, or slash.
+- The candidate popup is a lightweight Win32 window, not a full
+  \`ITfCandidateListUIElement\`; UI-less application mode is not supported.
+- Candidate coverage is a small starter dictionary, not a statistical language model.
+- The first key handler assumes a conventional Latin A–Z virtual-key layout.
+- Display-attribute underlining, reconversion, preserved keys, touch keyboard integration,
+  and context-specific composition recovery are not yet implemented.
+- Focus-loss recovery and composition teardown need further real-application testing.
+- The TSF registration tool and installer build successfully only after validation on a
+  supported Windows SDK; actual activation must be checked on Windows 11.
 
-This first input path is deliberately a **commit-on-delimiter prototype**: it does not display
-live pre-edit text or a candidate window while the user types. It uses
-`ITfContext::RequestEditSession` with a synchronous read/write edit session to replace the
-current selection with UTF-16 text. It does not yet register the service as a Tamil TSF language
-profile, so it is not yet selectable through Windows Settings.
+## Registration
 
-## Required next steps
+\`TamilImeRegistration.exe\` writes the COM in-process server registration under the current
+user's \`HKCU\\Software\\Classes\\CLSID\` and uses
+\`ITfInputProcessorProfiles::Register\`, \`AddLanguageProfile\`, and
+\`EnableLanguageProfile\` for Tamil (India), LANGID 0x0449. The uninstall operation removes
+the language profile and per-user COM registration.
 
-- Add COM registration and TSF profile registration/unregistration.
-- Replace commit-on-delimiter with a visible TSF composition and candidate list.
-- Add layout-aware key handling, uppercase/shift handling, punctuation and hotkey settings.
-- Handle read-only contexts, denied edit sessions, focus loss, dead keys, IME coexistence,
-  selection changes and shutdown cleanup.
-- Add automated Windows tests and manual application tests on Windows 11.
+## Microsoft references
+
+- [TSF compositions](https://learn.microsoft.com/windows/win32/tsf/compositions)
+- [ITfContextComposition::StartComposition](https://learn.microsoft.com/windows/win32/api/msctf/nf-msctf-itfcontextcomposition-startcomposition)
+- [ITfInsertAtSelection::InsertTextAtSelection](https://learn.microsoft.com/windows/win32/api/msctf/nf-msctf-itfinsertatselection-inserttextatselection)
+- [Text service registration](https://learn.microsoft.com/windows/win32/tsf/text-service-registration)

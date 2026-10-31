@@ -1,86 +1,61 @@
 # Upgrade plan: Google Input Tools – Modern Windows
 
-## Product goal
+## Goal
 
-Build an independent, maintainable Windows 11 input-method platform, beginning with
-Tamil transliteration and adding Hindi, Telugu, and other Indian languages as separate
-language packs when the shared engine is stable.
+An independent, maintainable Windows 11 x64 input-method platform. Tamil is the first language
+implementation; Hindi, Telugu, and other Indian languages follow as independent packs.
 
-## Scope
+## The five requested milestones
 
-- Primary target: Windows 11 x64.
-- Native Windows Text Services Framework (TSF) integration.
-- Modular transliteration, candidate ranking, dictionaries, and user vocabulary.
-- Tamil first; Hindi and Telugu next; then additional Indian languages.
-- Signed installer, safe upgrade/uninstall, accessibility and compatibility testing.
+### 1. Live Tamil composition
+**Prototype implemented:** A–Z keystrokes update a TSF composition immediately. Backspace edits
+the pending roman word, Escape cancels, and delimiters commit. Real Windows 11 desktop validation
+and broader keyboard-layout handling remain required.
 
-## Phases and acceptance criteria
+### 2. Candidate suggestions
+**Prototype implemented:** the engine returns multiple candidate strings for selected ambiguous
+words. A non-activating popup shows options; digits 1–9 and Up/Down change the selected candidate.
+The dictionary needs broader coverage and native-speaker review; a formal TSF candidate-list
+UI element is a future improvement.
 
-### Phase 0 — Repository governance
-- Maintain this as a separate repository; do not modify the archived upstream.
-- Preserve Apache-2.0 and attribution notices.
-- Record provenance/licenses for imported code and language data.
-- Add CI for Windows x64 builds and tests.
+### 3. Tamil TSF profile registration
+**Implementation added:** a per-user registration utility writes COM registration and calls
+\`ITfInputProcessorProfiles\` to register and enable the Tamil (India) language profile.
+Install/uninstall and profile visibility must still be checked on a Windows 11 desktop.
 
-**Exit:** repository policy, source provenance, and passing Windows CI.
+### 4. Settings and language switching
+**Implementation added:** a Win32 settings app stores Enabled and ShowCandidates for the current
+user. Use Windows' built-in **Win + Space** input switcher to select the installed profile.
+Shortcut customization and UI/accessibility polish are future enhancements.
 
-### Phase 1 — Modern build foundation
-- Replace legacy GYP/Python 2/MSVC-era build assumptions with CMake and C++20.
-- Keep the transliteration core platform-neutral.
-- Add deterministic tests and Unicode UTF-8 handling.
-- Avoid old protobuf/gtest/zlib/WTL dependencies unless a specific need is demonstrated.
+### 5. Windows installer
+**Implementation added:** an Inno Setup script and PowerShell build script create a per-user x64
+installer and call the registration utility. Signing, upgrade/rollback testing and actual
+machine install/uninstall validation remain release gates.
 
-**Exit:** reproducible Visual Studio 2022 x64 configure/build/test.
+## Technical foundation
 
-### Phase 2 — Tamil transliteration engine
-- Define a stable composing API for roman input to Tamil Unicode.
-- Add longest-match tokenization, word overrides, candidate lists, and backspace/edit support.
-- Create reviewed test data covering vowels, consonants, pulli, uyirmei combinations,
-  grantha letters, common words, punctuation, and mixed-script input.
-- Obtain native-speaker review before declaring the mapping production-ready.
+- C++20 + CMake.
+- Platform-neutral UTF-8 engine API and tests.
+- No Python 2, GYP, old WTL, or unneeded legacy dependency downloads.
+- Windows-specific integration stays under \`src/windows-tsf/\`.
 
-**Exit:** test corpus passes, Unicode output is valid, native-speaker acceptance is recorded.
+## Future languages
 
-### Phase 3 — Windows TSF
-- Complete the COM server lifecycle and TSF registration/profile setup.
-- Implement key event handling, composition updates, commit/cancel, backspace, and focus changes.
-- Add candidate UI and keyboard shortcuts.
-- Test in Notepad, Microsoft Office, browsers, and other supported Windows text controls.
+Hindi and Telugu are next after the shared engine contract stabilizes. Kannada, Malayalam,
+Bengali, Gujarati, Marathi, Punjabi, Odia, Assamese, and Urdu are planned later.
 
-**Exit:** signed Windows 11 test build passes the TSF application compatibility matrix.
+## Release gates
 
-### Phase 4 — Settings and language packs
-- Provide settings for input mode, key behavior, dictionary, and shortcuts.
-- Stabilize Tamil.
-- Add Hindi and Telugu with language-specific transliteration tests.
-- Plan Kannada, Malayalam, Bengali, Gujarati, Marathi, Punjabi, Odia, Assamese, and Urdu.
+- Windows x64 CI configure/build/test/package is green.
+- Manual activation in Notepad and Microsoft Word on Windows 11 x64.
+- Composition, cancel, backspace, punctuation, candidate selection and focus changes tested.
+- Per-user install, upgrade, rollback and uninstall tested.
+- Production language data reviewed by fluent native speakers.
+- Installer signed with a trusted code-signing certificate before public release.
 
-### Phase 5 — Packaging and release
-- Produce reproducible x64 artifacts.
-- Create a signed MSI/MSIX package, update strategy, rollback, and complete uninstaller.
-- Publish release notes, software bill of materials, and security reporting guidance.
+## Attribution
 
-## Initial architecture
-
-```text
-Windows TSF service
-       |
-Composition / Candidate UI
-       |
-Input Engine API
-       |
-Tokenizer + Candidate Ranker
-       |
-Language Pack Interface
-       +-- Tamil (ta) [first]
-       +-- Hindi (hi) [planned]
-       +-- Telugu (te) [planned]
-       +-- Other Indian languages [planned]
-```
-
-## Current implementation boundary
-
-The repository currently has a platform-neutral Tamil prototype, CMake build, smoke tests,
-Windows CI configuration, and an initial TSF key sink. The prototype buffers A–Z key events and
-commits converted text on delimiters; it does not yet show live composition text or candidates.
-TSF profile registration, installer, settings app, and production language data are not implemented.
+This is a separate community project, not an official Google product. The upstream
+\`google/google-input-tools\` repository remains untouched. Any future imported code or data
+requires individual license review and retained notices.
