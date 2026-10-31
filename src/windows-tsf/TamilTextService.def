@@ -1,0 +1,4 @@
+LIBRARY TamilTextService
+EXPORTS
+    DllGetClassObject
+    DllCanUnloadNow
