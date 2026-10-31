@@ -30,7 +30,7 @@ add_test(NAME tamil-engine-smoke COMMAND tamil-engine-tests)
 # installer integration, and Windows compatibility tests are subsequent milestones.
 if(WIN32)
     add_library(tamil_tsf SHARED src/windows-tsf/tsf_provider.cpp)
-    target_link_libraries(tamil_tsf PRIVATE input_engine ole32 msctf)
+    target_link_libraries(tamil_tsf PRIVATE input_engine ole32 msctf uuid)
     target_compile_definitions(tamil_tsf PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN)
     if(MSVC)
         target_compile_options(tamil_tsf PRIVATE /W4 /permissive- /utf-8)
