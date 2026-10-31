@@ -81,6 +81,6 @@ Language Pack Interface
 ## Current implementation boundary
 
 The repository currently has a platform-neutral Tamil prototype, CMake build, smoke tests,
-Windows CI configuration, and a TSF COM activation scaffold. The TSF scaffold does not yet
-consume keystrokes or insert text. Installer, candidate UI, settings app, and production
-language data are not implemented.
+Windows CI configuration, and an initial TSF key sink. The prototype buffers A–Z key events and
+commits converted text on delimiters; it does not yet show live composition text or candidates.
+TSF profile registration, installer, settings app, and production language data are not implemented.
