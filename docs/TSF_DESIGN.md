@@ -17,19 +17,24 @@ adapter around the platform-neutral `input_engine` library.
 6. **Installer** — registers/unregisters the COM server and TSF profile safely; never uses the
    upstream repository's test certificate.
 
-## Current scaffold
+## Current implementation
 
-`src/windows-tsf/tsf_provider.cpp` implements the initial COM activation/deactivation interface
-and class factory exports. It is deliberately only a lifecycle scaffold: it does not yet
-register a TSF language profile, advise an `ITfKeyEventSink`, or modify application text.
+`src/windows-tsf/tsf_provider.cpp` now implements the initial COM activation/deactivation
+lifecycle, class factory exports, and an `ITfKeyEventSink`. The key sink buffers A–Z keystrokes,
+supports backspace and escape in the pending roman buffer, and commits the transliterated word
+when the user presses space, enter, period, comma, semicolon, or slash.
+
+This first input path is deliberately a **commit-on-delimiter prototype**: it does not display
+live pre-edit text or a candidate window while the user types. It uses
+`ITfContext::RequestEditSession` with a synchronous read/write edit session to replace the
+current selection with UTF-16 text. It does not yet register the service as a Tamil TSF language
+profile, so it is not yet selectable through Windows Settings.
 
 ## Required next steps
 
 - Add COM registration and TSF profile registration/unregistration.
-- Implement `ITfKeyEventSink` and per-context composition state.
-- Use `ITfContext::RequestEditSession` for all document mutations.
-- Commit through an edit session; do not directly change document ranges from a key callback.
-- Convert UTF-8 engine output to UTF-16 using Windows conversion APIs.
+- Replace commit-on-delimiter with a visible TSF composition and candidate list.
+- Add layout-aware key handling, uppercase/shift handling, punctuation and hotkey settings.
 - Handle read-only contexts, denied edit sessions, focus loss, dead keys, IME coexistence,
-  and shutdown cleanup.
-- Add automated tests where possible and manual application tests on Windows 11.
+  selection changes and shutdown cleanup.
+- Add automated Windows tests and manual application tests on Windows 11.
