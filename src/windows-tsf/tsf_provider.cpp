@@ -16,7 +16,7 @@ std::atomic<long> g_server_locks{0};
 class TamilTextService final : public ITfTextInputProcessor {
 public:
     TamilTextService() noexcept { ++g_object_count; }
-    ~TamilTextService() override {
+    ~TamilTextService() {
         if (thread_manager_) {
             thread_manager_->Release();
             thread_manager_ = nullptr;
@@ -75,7 +75,7 @@ private:
 class TamilClassFactory final : public IClassFactory {
 public:
     TamilClassFactory() noexcept { ++g_object_count; }
-    ~TamilClassFactory() override { --g_object_count; }
+    ~TamilClassFactory() { --g_object_count; }
 
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** object) override {
         if (!object) return E_POINTER;
