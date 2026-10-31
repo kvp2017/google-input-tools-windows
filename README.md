@@ -12,7 +12,7 @@ An independent modernization project for Windows 11, starting with Tamil transli
 - Tamil starter word overrides and a conservative roman-token fallback.
 - Command-line demo and automated CTest smoke tests.
 - Windows CI workflow using Visual Studio 2022.
-- Initial Windows TSF COM activation scaffold (not yet a functional typing service).
+- Initial Windows TSF COM activation and key-event scaffold with commit-on-delimiter typing.
 
 ## Build on Windows 11
 
@@ -37,6 +37,8 @@ The expected demo output for `vanakkam` is `வணக்கம்`.
 | `nandri` | நன்றி |
 | `ulagam` | உலகம் |
 
+The TSF layer is currently a commit-on-delimiter prototype: it buffers roman keys and inserts
+Tamil text when a delimiter is pressed. It has no live pre-edit view or candidate window yet.
 This is only a starter dictionary, not a complete transliteration standard. Tamil spelling,
 vowel-sign composition, ambiguity handling, candidate ranking, and native-speaker review
 remain active development work.
