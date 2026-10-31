@@ -368,8 +368,7 @@ private:
 };
 } // namespace
 
-extern "C" __declspec(dllexport) HRESULT __stdcall
-DllGetClassObject(REFCLSID clsid, REFIID iid, void** object) {
+STDAPI DllGetClassObject(REFCLSID clsid, REFIID iid, void** object) {
     if (!object) return E_POINTER;
     *object = nullptr;
     if (clsid != CLSID_TamilTextService) return CLASS_E_CLASSNOTAVAILABLE;
@@ -381,7 +380,7 @@ DllGetClassObject(REFCLSID clsid, REFIID iid, void** object) {
     return result;
 }
 
-extern "C" __declspec(dllexport) HRESULT __stdcall DllCanUnloadNow() {
+STDAPI DllCanUnloadNow(void) {
     return (g_object_count.load() == 0 && g_server_locks.load() == 0)
         ? S_OK : S_FALSE;
 }
