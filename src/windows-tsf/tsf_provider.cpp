@@ -4,7 +4,9 @@
 #include <msctf.h>
 
 #include <atomic>
+#include <climits>
 #include <new>
+#include <utility>
 #include <string>
 #include <string_view>
 
