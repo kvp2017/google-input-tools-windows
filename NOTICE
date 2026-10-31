@@ -1,0 +1,12 @@
+Google Input Tools – Modern Windows
+Independent community modernization project.
+
+This project studies the architecture and public source history of
+https://github.com/google/google-input-tools. The upstream project is licensed under
+Apache License 2.0 and is archived by its owner. This repository is maintained separately;
+it is not an official Google product and does not imply Google endorsement.
+
+The initial modernization scaffold contains newly written build configuration, documentation,
+and prototype code. No upstream source files or language data are copied in this initial commit.
+Any future imported upstream material must retain required copyright, license, and attribution
+notices, and its provenance must be documented here.
