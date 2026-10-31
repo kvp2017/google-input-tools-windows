@@ -17,6 +17,9 @@ int main() {
             return 1;
         }
     }
+    if (engine.transliterate("ka") != "க") return 4;
+    if (engine.transliterate("ki") != "கி") return 5;
+    if (engine.transliterate("kavi") != "கவி") return 6;
     const auto kalam = engine.candidates("kalam");
     if (kalam.size() != 2 || kalam[0] != "காலம்" || kalam[1] != "களம்") return 2;
     const auto palli = engine.candidates("palli");
